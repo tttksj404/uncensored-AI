@@ -1,0 +1,229 @@
+{
+  "profiles": {
+    "fast": {
+      "model": "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M",
+      "label": "Local Qwen3.5 27B uncensored heretic fast-strict",
+      "size_gb": 15,
+      "use_for": [
+        "짧은 답변",
+        "요약",
+        "간단한 코드",
+        "분류",
+        "빠른 초안",
+        "Heretic-only 빠른 작업"
+      ],
+      "fallback_models": [
+        "hf.co/pegasus912/gemma-4-31B-it-heretic-Q4_K_M-GGUF:Q4_K_M"
+      ]
+    },
+    "balanced": {
+      "model": "hf.co/llmfan46/Qwen3.5-9B-ultra-uncensored-heretic-v2-GGUF:Q4_K_M",
+      "label": "9B heretic balanced",
+      "size_gb": 5.15,
+      "use_for": [
+        "일반 업무",
+        "코딩",
+        "기획",
+        "분석",
+        "긴 답변"
+      ],
+      "fallback_models": [
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M",
+        "hf.co/pegasus912/gemma-4-31B-it-heretic-Q4_K_M-GGUF:Q4_K_M"
+      ]
+    },
+    "creative": {
+      "model": "hf.co/llmfan46/gemma-4-E4B-it-ultra-uncensored-heretic-GGUF:Q4_K_M",
+      "label": "Gemma E4B heretic creative",
+      "size_gb": 4.97,
+      "use_for": [
+        "창작",
+        "글쓰기",
+        "캐릭터",
+        "브레인스토밍",
+        "대화"
+      ],
+      "fallback_models": [
+        "hf.co/pegasus912/gemma-4-31B-it-heretic-Q4_K_M-GGUF:Q4_K_M",
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M"
+      ]
+    },
+    "aggressive9b": {
+      "model": "hf.co/DavidAU/Qwen3.5-9B-Claude-4.6-OS-Auto-Variable-HERETIC-UNCENSORED-THINKING-MAX-NEOCODE-Imatrix-GGUF:IQ4_XS",
+      "label": "9B heretic uncensored neocode alternate",
+      "size_gb": 5.85,
+      "use_for": [
+        "코딩 대안",
+        "NEOCODE",
+        "직설적 답변",
+        "Heretic-only 일반 대안"
+      ],
+      "fallback_models": [
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M",
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q4_K_M"
+      ]
+    },
+    "heavy": {
+      "model": "hf.co/KevinJK51/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-V2-Hightop-GGUF:Q4_K_M",
+      "label": "12B heretic thinking",
+      "size_gb": 6.82,
+      "use_for": [
+        "복잡한 추론",
+        "큰 코드 수정",
+        "정확도 우선",
+        "다단계 계획"
+      ],
+      "fallback_models": [
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q4_K_M",
+        "hf.co/pegasus912/gemma-4-31B-it-heretic-Q4_K_M-GGUF:Q4_K_M",
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M"
+      ]
+    },
+    "max27b": {
+      "model": "hf.co/llmfan46/Qwen3.6-27B-uncensored-heretic-v2-GGUF:Q3_K_M",
+      "label": "27B heretic optional slow",
+      "size_gb": 12.39,
+      "optional": true,
+      "use_for": [
+        "느려도 최고 품질",
+        "긴 문서",
+        "복잡한 아키텍처"
+      ],
+      "fallback_models": [
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q4_K_M",
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M"
+      ]
+    },
+    "gemma4_uncensored_local": {
+      "model": "hf.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive:Q4_K_M",
+      "label": "Remote Gemma4 E4B uncensored optional",
+      "size_gb": 6.3,
+      "local": false,
+      "use_for": [
+        "현재 PC에 이미 설치된 Gemma4 uncensored",
+        "빠른 창작",
+        "대화",
+        "가벼운 일반 업무"
+      ],
+      "fallback_models": [
+        "hf.co/pegasus912/gemma-4-31B-it-heretic-Q4_K_M-GGUF:Q4_K_M",
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M"
+      ]
+    },
+    "gemma4_31b_heretic_local": {
+      "model": "hf.co/pegasus912/gemma-4-31B-it-heretic-Q4_K_M-GGUF:Q4_K_M",
+      "label": "Local Gemma4 31B Heretic Q4 existing",
+      "size_gb": 18,
+      "local": true,
+      "use_for": [
+        "현재 PC에 이미 설치된 Gemma4 31B Heretic",
+        "고품질 창작",
+        "긴 문서",
+        "정확도 우선",
+        "heavy Gemma4"
+      ],
+      "fallback_models": [
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M",
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q4_K_M"
+      ]
+    },
+    "qwen35_27b_heretic_local_q3": {
+      "model": "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M",
+      "label": "Local Qwen3.5 27B uncensored heretic Q3",
+      "size_gb": 15,
+      "local": true,
+      "use_for": [
+        "?? ???",
+        "uncensored",
+        "heretic",
+        "??? ?? ??",
+        "strict fallback"
+      ],
+      "fallback_models": [
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q4_K_M",
+        "hf.co/pegasus912/gemma-4-31B-it-heretic-Q4_K_M-GGUF:Q4_K_M"
+      ]
+    },
+    "qwen35_27b_heretic_local_q4": {
+      "model": "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q4_K_M",
+      "label": "Local Qwen3.5 27B uncensored heretic Q4",
+      "size_gb": 18,
+      "local": true,
+      "use_for": [
+        "?? ???",
+        "uncensored",
+        "heretic",
+        "????",
+        "strict max"
+      ],
+      "fallback_models": [
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M",
+        "hf.co/pegasus912/gemma-4-31B-it-heretic-Q4_K_M-GGUF:Q4_K_M"
+      ]
+    },
+    "qwen4b_heretic_disabled": {
+      "model": "hf.co/mradermacher/Qwen3-4B-2507-Thinking-heretic-abliterated-uncensored-GGUF:Q4_K_M",
+      "label": "DISABLED - Qwen3 4B heretic produced empty responses in stress test",
+      "size_gb": 2.5,
+      "disabled": true,
+      "use_for": [
+        "diagnostic only"
+      ]
+    }
+  },
+  "routing": {
+    "default": "balanced",
+    "level_map": {
+      "1": "fast",
+      "2": "balanced",
+      "3": "heavy",
+      "4": "heavy",
+      "5": "max27b",
+      "light": "fast",
+      "normal": "balanced",
+      "heavy": "heavy",
+      "max": "max27b",
+      "local": "qwen35_27b_heretic_local_q3",
+      "gemma4": "gemma4_31b_heretic_local",
+      "gemma4-heavy": "gemma4_31b_heretic_local",
+      "gemma4-31b": "gemma4_31b_heretic_local"
+    },
+    "task_map": {
+      "fast": "fast",
+      "summary": "fast",
+      "summarize": "fast",
+      "creative": "creative",
+      "writing": "creative",
+      "roleplay": "creative",
+      "code": "balanced",
+      "coding": "balanced",
+      "analysis": "heavy",
+      "reasoning": "heavy",
+      "architecture": "heavy",
+      "gemma": "gemma4_31b_heretic_local",
+      "local": "qwen35_27b_heretic_local_q3",
+      "uncensored_gemma": "gemma4_uncensored_local",
+      "gemma4_uncensored": "gemma4_uncensored_local",
+      "gemma4": "gemma4_31b_heretic_local",
+      "gemma4_heavy": "gemma4_31b_heretic_local",
+      "gemma4_31b": "gemma4_31b_heretic_local"
+    },
+    "strict_uncensored_only": true
+  },
+  "ollama": {
+    "host": "http://[::1]:11435",
+    "temperature": 0.15,
+    "num_ctx": 8192,
+    "keep_alive": "20m",
+    "num_predict": 768,
+    "top_p": 0.85,
+    "top_k": 40,
+    "min_p": 0.05,
+    "repeat_penalty": 1.22,
+    "repeat_last_n": 512,
+    "frequency_penalty": 0.25,
+    "presence_penalty": 0.05,
+    "request_timeout": 240,
+    "use_generate_raw": true
+  }
+}

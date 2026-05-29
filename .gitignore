@@ -1,1 +1,36 @@
-# initial branch bootstrap
+﻿# secrets / local env
+.env
+*.secret
+*.key
+
+# dependencies / caches
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# runtime logs / generated artifacts
+*.log
+omni-agent/test-run-*/
+omni-agent/*_report.json
+agent-smoke-test*/
+agent-fast-smoke/
+agent-qwen27-smoke/
+agent-raw-smoke/
+download-test/
+exe-direct-agent-test/
+playwright-agent-smoke/
+playwright-smoke/
+session-agent-memory-test/
+session-direct-agent-test/
+session-direct-code-edit-test/
+stress-agent-workspace/
+tmp-create-test2/
+
+# screenshots / temporary web captures
+*.png
+*.naver
+
+# transient backups kept locally only
+*.bak_*
+omni-agent/*.bak_*

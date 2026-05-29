@@ -1,0 +1,1 @@
+create direct_auto.txt containing DIRECT-AUTO only
