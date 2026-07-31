@@ -138,9 +138,77 @@ WEB_INTENT_WORDS = [
 ]
 
 
+ENV_PATH = ROOT / ".env"
+
+
+def _load_dotenv() -> None:
+    """Load KEY=VALUE pairs from omni-agent/.env into os.environ.
+
+    The file is gitignored on purpose: the GPU server address and any auth token
+    must never be committed. Existing environment variables win, so an explicitly
+    exported value always overrides the file.
+    """
+    for path in (ENV_PATH, ROOT.parent / ".env"):
+        if not path.is_file():
+            continue
+        try:
+            for raw in path.read_text(encoding="utf-8-sig", errors="replace").splitlines():
+                line = raw.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, _, value = line.partition("=")
+                key = key.strip()
+                value = value.strip().strip('"').strip("'")
+                if key and key not in os.environ:
+                    os.environ[key] = value
+        except Exception as e:
+            print(f"[env] .env 읽기 실패 {path}: {e}", file=sys.stderr)
+
+
+def is_remote_host(host: str) -> bool:
+    """True when the Ollama endpoint is not on this machine."""
+    h = (host or "").strip().lower()
+    for prefix in ("http://", "https://"):
+        if h.startswith(prefix):
+            h = h[len(prefix):]
+            break
+    h = h.split("/")[0]
+    if h.startswith("["):
+        h = h[1:h.find("]")] if "]" in h else h[1:]
+    else:
+        h = h.rsplit(":", 1)[0] if h.count(":") == 1 else h
+    return h not in ("localhost", "127.0.0.1", "0.0.0.0", "::1", "")
+
+
 def load_config() -> Dict[str, Any]:
+    _load_dotenv()
     with open(CONFIG_PATH, "r", encoding="utf-8-sig") as f:
-        return json.load(f)
+        config = json.load(f)
+
+    ollama_cfg = config.setdefault("ollama", {})
+    host_override = os.environ.get("OMNI_OLLAMA_HOST") or os.environ.get("OLLAMA_HOST")
+    if host_override:
+        host = host_override.strip()
+        if not host.startswith(("http://", "https://")):
+            host = "http://" + host
+        ollama_cfg["host"] = host
+    token = os.environ.get("OMNI_OLLAMA_TOKEN")
+    if token:
+        ollama_cfg["auth_token"] = token.strip()
+    ollama_cfg["remote"] = is_remote_host(ollama_cfg.get("host", ""))
+    return config
+
+
+def api_headers(config: Dict[str, Any] | None = None, token: str | None = None) -> Dict[str, str]:
+    """Headers for Ollama HTTP calls, including bearer auth when a token is set."""
+    headers = {"Content-Type": "application/json"}
+    if token is None and config is not None:
+        token = config.get("ollama", {}).get("auth_token")
+    if token is None:
+        token = os.environ.get("OMNI_OLLAMA_TOKEN")
+    if token:
+        headers["Authorization"] = "Bearer " + token
+    return headers
 
 
 
@@ -254,20 +322,31 @@ def stop_ollama_model(model: str, host: str) -> None:
         req = urllib.request.Request(
             host + "/api/generate",
             data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
+            headers=api_headers(),
         )
         with urllib.request.urlopen(req, timeout=3):
             pass
     except Exception:
         pass
-    if os.name == "nt":
+    # Only ever kill a llama-server that belongs to this machine. When the model
+    # runs on a remote GPU server, this would terminate an unrelated local process.
+    if os.name == "nt" and not is_remote_host(host):
         try:
             subprocess.run(["taskkill", "/F", "/IM", "llama-server.exe"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
         except Exception:
             pass
 
 
-def ollama_available() -> bool:
+def ollama_available(host: str | None = None) -> bool:
+    # With a remote GPU server the local Ollama CLI is optional: reachability of
+    # the HTTP API is what actually matters. Call sites stay argument-free, so the
+    # host falls back to the same env var load_config() honours.
+    if host is None:
+        host = os.environ.get("OMNI_OLLAMA_HOST") or os.environ.get("OLLAMA_HOST") or ""
+    if host and is_remote_host(host):
+        if not host.startswith(("http://", "https://")):
+            host = "http://" + host
+        return _ollama_api_ok(host, timeout=5.0)
     code, _ = run([_ollama_exe(), "--version"], timeout=10)
     return code == 0
 
@@ -317,7 +396,8 @@ def choose_profile(config: Dict[str, Any], prompt: str, level: str = "auto", tas
 
 def ollama_tags(host: str) -> List[str]:
     try:
-        with urllib.request.urlopen(host.rstrip("/") + "/api/tags", timeout=10) as r:
+        req = urllib.request.Request(host.rstrip("/") + "/api/tags", headers=api_headers())
+        with urllib.request.urlopen(req, timeout=10) as r:
             data = json.load(r)
         return [m.get("name", "") for m in data.get("models", [])]
     except Exception:
@@ -338,10 +418,11 @@ def ollama_tags(host: str) -> List[str]:
             return []
 
 
-def _ollama_api_ok(host: str) -> bool:
+def _ollama_api_ok(host: str, timeout: float = 2.0) -> bool:
     url = host.rstrip("/") + "/api/tags"
     try:
-        with urllib.request.urlopen(url, timeout=2):
+        req = urllib.request.Request(url, headers=api_headers())
+        with urllib.request.urlopen(req, timeout=timeout):
             return True
     except Exception:
         return False
@@ -377,6 +458,18 @@ def _kill_ollama_processes() -> None:
 
 def ensure_ollama_api(host: str, wait_seconds: int = 8) -> None:
     url = host.rstrip("/") + "/api/tags"
+    # A remote GPU server is reachable over the network only. Never try to spawn
+    # or kill a local Ollama process in that case - it would silently mask an
+    # unreachable server and start a second, empty instance on this machine.
+    if is_remote_host(host):
+        if _ollama_api_ok(host, timeout=5.0):
+            return
+        raise RuntimeError(
+            f"원격 Ollama 서버에 연결할 수 없습니다: {url}\n"
+            "OMNI_OLLAMA_HOST 값과 GPU 서버 상태를 확인하세요. "
+            "서버 쪽에서 OLLAMA_HOST=0.0.0.0 으로 떠 있어야 외부 접속이 됩니다."
+        )
+
     if _ollama_api_ok(host):
         return
 
@@ -535,7 +628,10 @@ def chat_ollama(config: Dict[str, Any], model: str, messages: List[Dict[str, str
     host = config["ollama"]["host"].rstrip("/")
     request_timeout = config["ollama"].get("request_timeout", 180)
     if json_mode:
-        request_timeout = min(int(request_timeout), 30)
+        # A 35B MoE with thinking enabled needs more than the old hard-coded 30s,
+        # especially on the first request when the server still has to load it.
+        json_timeout = config["ollama"].get("json_request_timeout", 120)
+        request_timeout = min(int(request_timeout), int(json_timeout))
     options = {
         "temperature": 0.0 if json_mode else (config["ollama"].get("temperature", 0.25) if temperature is None else temperature),
         "num_ctx": config["ollama"].get("num_ctx", 8192) if num_ctx is None else num_ctx,
@@ -570,7 +666,7 @@ def chat_ollama(config: Dict[str, Any], model: str, messages: List[Dict[str, str
         if json_mode:
             payload["format"] = "json"
         endpoint = "/api/chat"
-    req = urllib.request.Request(host + endpoint, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"})
+    req = urllib.request.Request(host + endpoint, data=json.dumps(payload).encode("utf-8"), headers=api_headers(config))
     chunks: List[str] = []
     try:
         with urllib.request.urlopen(req, timeout=request_timeout) as r:
