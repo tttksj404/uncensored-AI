@@ -85,6 +85,21 @@ cd "C:\Users\SSAFY\Documents\Codex\2026-05-27\uncensored-heretic-ai-pc\omni-agen
 - `--task analysis`: 12B heavy
 - `auto`: 프롬프트 키워드와 길이를 보고 자동 선택
 
+## 원격 Qwen3.8 Q6 모델 등록
+
+현재 원격 추론 서버에서 검증한 `Qwen3.8-27B-TurboFCFusion` Q6 파일은 이 저장소에
+대용량 바이너리로 복사하지 않고, Hugging Face 원본을 가리키는 선택 프로필로 등록했습니다.
+파일 크기는 약 24.03 GB이며, 실제 파일의 SHA-256은
+`ac011aabe685edbdf542e49351eb6c76c0e5531408f2507f2235ab10931e23a5`입니다.
+
+```powershell
+.\omni.ps1 route "복잡한 코드 구조를 분석해줘" --level qwen38
+.\omni.ps1 ask "이 프로젝트의 병목을 찾아줘" --level qwen38
+```
+
+처음 호출하면 Ollama가 원본 모델을 내려받습니다. 원본 주소와 정량화 태그는
+`models.json`의 `qwen38_turbo_fusion_q6` 프로필에서 확인할 수 있습니다.
+
 ## 설정 변경
 
 `models.json`에서 프로필, 모델명, temperature, context를 수정하면 됩니다.

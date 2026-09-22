@@ -94,6 +94,24 @@
         "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M"
       ]
     },
+    "qwen38_turbo_fusion_q6": {
+      "model": "hf.co/DavidAU/Qwen3.8-27B-TURBO-Fable-Cold-Fusion-735-882-Heretic-Uncensored-NEO-CODER-MAX-MTP-GGUF:Q6_K",
+      "label": "Qwen3.8 Turbo Fable Fusion 27B MTP Q6",
+      "size_gb": 24.03,
+      "optional": true,
+      "source_url": "https://huggingface.co/DavidAU/Qwen3.8-27B-TURBO-Fable-Cold-Fusion-735-882-Heretic-Uncensored-NEO-CODER-MAX-MTP-GGUF",
+      "verified_sha256": "ac011aabe685edbdf542e49351eb6c76c0e5531408f2507f2235ab10931e23a5",
+      "use_for": [
+        "현재 원격 검증 모델과 동일한 Q6 계열",
+        "고품질 코딩",
+        "긴 문서",
+        "범용 에이전트"
+      ],
+      "fallback_models": [
+        "hf.co/llmfan46/Qwen3.5-27B-uncensored-heretic-v2-Native-MTP-Preserved-GGUF:Q3_K_M",
+        "hf.co/KevinJK51/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-V2-Hightop-GGUF:Q4_K_M"
+      ]
+    },
     "gemma4_uncensored_local": {
       "model": "hf.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive:Q4_K_M",
       "label": "Remote Gemma4 E4B uncensored optional",
@@ -183,6 +201,8 @@
       "normal": "balanced",
       "heavy": "heavy",
       "max": "max27b",
+      "qwen38": "qwen38_turbo_fusion_q6",
+      "qwen3.8": "qwen38_turbo_fusion_q6",
       "local": "qwen35_27b_heretic_local_q3",
       "gemma4": "gemma4_31b_heretic_local",
       "gemma4-heavy": "gemma4_31b_heretic_local",
@@ -200,6 +220,8 @@
       "analysis": "heavy",
       "reasoning": "heavy",
       "architecture": "heavy",
+      "qwen38": "qwen38_turbo_fusion_q6",
+      "qwen3.8": "qwen38_turbo_fusion_q6",
       "gemma": "gemma4_31b_heretic_local",
       "local": "qwen35_27b_heretic_local_q3",
       "uncensored_gemma": "gemma4_uncensored_local",
